@@ -18,16 +18,9 @@
   </div>
   <script type="module">
     import { handleCallback } from './spotify-api.js';
-
     const token = await handleCallback();
     if (token) {
-      // If opened as popup, notify opener and close
-      if (window.opener) {
-        window.opener.postMessage({ type: 'spotify_connected', token }, '*');
-        window.close();
-      } else {
-        window.location.href = 'https://kuem-15821.web.app?spotify=connected';
-      }
+      window.location.href = 'https://kuem-15821.web.app?spotify=connected';
     } else {
       document.querySelector('p').textContent = 'Something went wrong. Please try again.';
     }

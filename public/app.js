@@ -19,6 +19,13 @@ let paused = false;
 (async () => {
   if (location.search.includes('code=')) await handleCallback();
 
+  // Reinit player after Spotify OAuth redirect
+  if (location.search.includes('spotify=connected')) {
+    history.replaceState({}, '', '/');
+    if (await getAccessToken()) initPlayer(deviceId => setDJDevice(deviceId), () => {});
+    showToast('Spotify connected!');
+  }
+
   // Listen for Spotify token from popup
   window.addEventListener('message', async (e) => {
     if (e.data?.type === 'spotify_connected') {
