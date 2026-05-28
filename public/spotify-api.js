@@ -8,6 +8,7 @@ export async function startSpotifyAuth() {
   const verifier = randomStr(64);
   const challenge = await pkceChallenge(verifier);
   sessionStorage.setItem('pkce_verifier', verifier);
+  localStorage.setItem('pkce_verifier', verifier);
 
   const params = new URLSearchParams({
     client_id: SPOTIFY_CLIENT_ID,
@@ -26,7 +27,7 @@ export async function handleCallback() {
   const code = new URLSearchParams(location.search).get('code');
   if (!code) return null;
 
-  const verifier = sessionStorage.getItem('pkce_verifier');
+  const verifier = sessionStorage.getItem('pkce_verifier') || localStorage.getItem('pkce_verifier');
   const res = await fetch('https://kue-production.up.railway.app/api/spotify/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
