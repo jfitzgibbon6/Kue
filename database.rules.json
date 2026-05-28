@@ -1,0 +1,33 @@
+{
+  "rules": {
+    "sessions": {
+      "$sessionId": {
+        ".read": true,
+        "metadata": {
+          ".write": "auth != null && (!data.exists() || data.child('createdBy').val() === auth.uid)"
+        },
+        "nowPlaying": {
+          ".write": "auth != null && root.child('sessions').child($sessionId).child('metadata/createdBy').val() === auth.uid"
+        },
+        "queue": {
+          "$songId": {
+            ".write": "auth != null",
+            "votes": {
+              "$userId": {
+                ".write": "$userId === auth.uid"
+              }
+            }
+          }
+        },
+        "history": {
+          ".write": "auth != null && root.child('sessions').child($sessionId).child('metadata/createdBy').val() === auth.uid"
+        },
+        "users": {
+          "$userId": {
+            ".write": "$userId === auth.uid"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Connecting Spotify…</title>
+  <style>
+    body { background: #000; color: #fff; font-family: -apple-system, sans-serif;
+           display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .msg { text-align: center; }
+    .logo { font-size: 36px; font-weight: 900; color: #E2289F; margin-bottom: 12px; }
+    p { color: #555; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="msg">
+    <div class="logo">kue</div>
+    <p>Connecting Spotify…</p>
+  </div>
+  <script type="module">
+    import { handleCallback } from './spotify-api.js';
+
+    const token = await handleCallback();
+    if (token) {
+      window.location.href = '/public/index.html?spotify=connected';
+    } else {
+      document.querySelector('p').textContent = 'Something went wrong. Please try again.';
+    }
+  </script>
+</body>
+</html>

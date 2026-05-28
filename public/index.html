@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#E2289F">
+  <title>Kue</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #fff;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Phone shell ─────────────────────────────────────────────────────── */
+    .kw {
+      width: 375px;
+      height: 812px;
+      background: #0a0a0a;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 40px 120px rgba(226,40,159,.25), 0 0 0 1px #1a1a1a;
+    }
+
+    /* ── Status bar ──────────────────────────────────────────────────────── */
+    .ksb {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px 0;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .ksbr { display: flex; gap: 6px; align-items: center; }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+    .kh {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px 8px;
+      flex-shrink: 0;
+    }
+    .khl { display: flex; flex-direction: column; }
+    .khv { font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
+    .khs { font-size: 11px; color: #555; margin-top: 1px; }
+    .kpp {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #111;
+      border-radius: 20px;
+      padding: 5px 10px 5px 5px;
+      font-size: 11px;
+      color: #888;
+    }
+    .kppd {
+      width: 8px; height: 8px;
+      background: #E2289F;
+      border-radius: 50%;
+      animation: kpulse 2s ease-in-out infinite;
+    }
+    @keyframes kpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+    /* ── Now Playing card ────────────────────────────────────────────────── */
+    .knp {
+      margin: 0 16px 12px;
+      background: linear-gradient(135deg, #111 0%, #0d0d0d 100%);
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+    .knpt { font-size: 10px; color: #E2289F; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .knpc { display: flex; gap: 12px; align-items: center; }
+    .kart {
+      width: 82px; height: 82px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #1a1a1a, #111);
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .knpi { flex: 1; min-width: 0; }
+    .knptit { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .knpar { font-size: 12px; color: #888; margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+    .knpby { font-size: 10px; color: #444; margin-top: 6px; }
+
+    /* Waveform */
+    #kwf {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 30px;
+      margin-top: 8px;
+    }
+    @keyframes kwfp { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(1.6)} }
+
+    /* Progress bar */
+    .kpr { margin-top: 8px; }
+    .kprb { height: 3px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
+    .kpf { height: 100%; background: #E2289F; border-radius: 2px; width: 0%; transition: width .5s linear; }
+    .kprr { display: flex; justify-content: space-between; font-size: 10px; color: #444; margin-top: 4px; }
+
+    /* ── Tabs ────────────────────────────────────────────────────────────── */
+    .kts {
+      display: flex;
+      gap: 4px;
+      padding: 0 16px 10px;
+      flex-shrink: 0;
+    }
+    .ktab {
+      flex: 1;
+      background: #111;
+      border: none;
+      border-radius: 10px;
+      color: #555;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .ktab.on { background: #E2289F; color: #fff; }
+
+    /* ── Queue list ──────────────────────────────────────────────────────── */
+    #kqv { flex: 1; overflow-y: auto; padding: 0 16px; scrollbar-width: none; }
+    #kqv::-webkit-scrollbar { display: none; }
+
+    #khv {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      scrollbar-width: none;
+    }
+    #khv::-webkit-scrollbar { display: none; }
+
+    .kqi {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #111;
+    }
+    .kqi.k1 { border-bottom-color: #1a1a1a; }
+
+    .kqn {
+      font-size: 11px;
+      font-weight: 700;
+      color: #333;
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .kqn.tp { color: #E2289F; }
+
+    /* #1 animated bars */
+    .kqnb { display: flex; align-items: flex-end; gap: 2px; width: 28px; flex-shrink: 0; }
+    .kqnbs { display: flex; align-items: flex-end; gap: 2px; }
+    .kqnbr {
+      width: 3px;
+      background: #E2289F;
+      border-radius: 2px;
+      animation: kbar 1s ease-in-out infinite alternate;
+    }
+    @keyframes kbar { from{transform:scaleY(.4)} to{transform:scaleY(1)} }
+
+    .kqar { width: 46px; height: 46px; border-radius: 7px; background: #1a1a1a; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .kqin { flex: 1; min-width: 0; }
+    .kqtl { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kqar2 { font-size: 11px; color: #555; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kqby { font-size: 10px; color: #333; margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+    .kav {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #E2289F;
+      font-size: 8px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Explicit badge */
+    .kexpl {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px; height: 14px;
+      background: #333;
+      color: #888;
+      font-size: 8px;
+      font-weight: 700;
+      border-radius: 3px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* Vote controls */
+    .kvc2 { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+    .kuv, .kdv {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: #111;
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, transform .1s;
+    }
+    .kuv:active, .kdv:active { transform: scale(.9); }
+    .kuv.v { background: #E2289F; }
+    .kdv.v { background: #333; }
+    .kvn { font-size: 11px; font-weight: 700; color: #fff; min-width: 20px; text-align: center; }
+    .kmo {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #333;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .kmo:hover { color: #E2289F; }
+
+    /* ── Bottom action bar ───────────────────────────────────────────────── */
+    .kba {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px 20px;
+      flex-shrink: 0;
+    }
+    .kadb {
+      flex: 1;
+      background: #E2289F;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      height: 48px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: opacity .15s, transform .1s;
+    }
+    .kadb:active { opacity: .85; transform: scale(.98); }
+    .kdjb {
+      width: 48px; height: 48px;
+      background: #111;
+      border: none;
+      border-radius: 14px;
+      color: #E2289F;
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+      align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .kdjb:hover { background: #1a1a1a; }
+
+    /* ── Modals ──────────────────────────────────────────────────────────── */
+    .kmodal {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.85);
+      display: none;
+      flex-direction: column;
+      border-radius: 44px;
+      overflow: hidden;
+      z-index: 100;
+    }
+    .kmodal-inner {
+      background: #0d0d0d;
+      border-radius: 24px 24px 0 0;
+      margin-top: auto;
+      max-height: 85%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .kmodal-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+    .kmodal-hdr h2 { font-size: 16px; font-weight: 800; }
+    .kmbtn {
+      width: 32px; height: 32px;
+      background: #1a1a1a;
+      border: none;
+      border-radius: 50%;
+      color: #888;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Search modal */
+    .ksearch-wrap { padding: 12px 16px; flex-shrink: 0; }
+    .ksearch-inp {
+      width: 100%;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      padding: 10px 14px;
+      outline: none;
+    }
+    .ksearch-inp:focus { border-color: #E2289F; }
+    #kSearchResults { flex: 1; overflow-y: auto; padding: 0 16px 16px; scrollbar-width: none; }
+    #kSearchResults::-webkit-scrollbar { display: none; }
+    .ksri {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #111;
+    }
+
+    /* DJ modal */
+    .kdj-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+    .kdjrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .kdjrow-l { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+    .kdjrow-l i { font-size: 18px; color: #E2289F; }
+    .kdjact {
+      background: #E2289F;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .kdjact.danger { background: #c0392b; }
+
+    /* ── Landing screen ──────────────────────────────────────────────────── */
+    #klanding {
+      position: absolute;
+      inset: 0;
+      background: #0a0a0a;
+      border-radius: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 28px;
+      gap: 0;
+      z-index: 200;
+    }
+    .klogo { font-size: 48px; font-weight: 900; letter-spacing: -3px; color: #E2289F; margin-bottom: 6px; }
+    .ktagline { font-size: 12px; color: #444; margin-bottom: 36px; text-align: center; }
+    .kld-form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .kld-inp {
+      width: 100%;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+    }
+    .kld-inp:focus { border-color: #E2289F; }
+    .kld-inp::placeholder { color: #444; }
+    .kld-btn {
+      width: 100%;
+      background: #E2289F;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      height: 48px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .kld-btn:active { opacity: .85; }
+    .kld-btn.sec { background: #111; color: #888; margin-top: 4px; }
+    .kld-div { display: flex; align-items: center; gap: 10px; color: #333; font-size: 11px; margin: 4px 0; }
+    .kld-div::before, .kld-div::after { content: ''; flex: 1; height: 1px; background: #1a1a1a; }
+    .kld-err { font-size: 11px; color: #E2289F; text-align: center; min-height: 16px; }
+    .kld-share {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: #111;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 4px;
+    }
+    .kld-share-label { font-size: 11px; color: #555; }
+    .kld-code { font-size: 32px; font-weight: 900; letter-spacing: 6px; color: #E2289F; }
+
+    @keyframes kshake {
+      0%,100%{transform:translateX(0)}
+      20%,60%{transform:translateX(-6px)}
+      40%,80%{transform:translateX(6px)}
+    }
+
+    /* ── Responsive: full-screen on small devices ────────────────────────── */
+    @media (max-width: 400px) {
+      body { align-items: flex-start; }
+      .kw { width: 100vw; height: 100dvh; border-radius: 0; }
+      #klanding { border-radius: 0; }
+      .kmodal { border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="kw">
+
+  <!-- ── Landing ──────────────────────────────────────────────────────────── -->
+  <div id="klanding">
+    <div class="klogo">kue</div>
+    <div class="ktagline">Collaborative music queue — vote for what plays next</div>
+
+    <div class="kld-form">
+      <input id="ldName" class="kld-inp" type="text" placeholder="Your name (e.g. @alex)" maxlength="24" autocomplete="off">
+
+      <button class="kld-btn" id="btnCreateSession">
+        <i class="ti ti-plus"></i> Create Session
+      </button>
+
+      <div id="ldShareBox" class="kld-share">
+        <div class="kld-share-label">Share this code with your crowd</div>
+        <div class="kld-code" id="ldCode">——</div>
+        <canvas id="ldQR" style="margin-top:8px;border-radius:8px;"></canvas>
+        <div class="kld-share-label" style="font-size:10px;color:#333;">Scan to join</div>
+      </div>
+
+      <div class="kld-div">or join an existing session</div>
+      <input id="ldCode2" class="kld-inp" type="text" placeholder="Session code (e.g. XJ4K9P)" maxlength="6"
+             autocomplete="off" style="text-transform:uppercase;letter-spacing:3px;">
+      <button class="kld-btn sec" id="btnJoinSession">
+        <i class="ti ti-door-enter"></i> Join
+      </button>
+
+      <div id="ldErr" class="kld-err"></div>
+    </div>
+  </div>
+
+  <!-- ── App ──────────────────────────────────────────────────────────────── -->
+  <div id="kapp" style="display:none;flex-direction:column;height:100%;">
+
+    <!-- Status bar removed -->
+
+    <!-- Header -->
+    <div class="kh">
+      <div class="khl">
+        <div class="khv">kue</div>
+        <div class="khs" id="kvenueName">Loading…</div>
+      </div>
+      <div class="kpp">
+        <div class="kppd"></div>
+        <span id="kpeople">0</span> here
+      </div>
+    </div>
+
+    <!-- Now Playing -->
+    <div class="knp">
+      <div class="knpt">▶ Now Playing</div>
+      <div class="knpc">
+        <div class="kart" id="kartEl">🎵</div>
+        <div class="knpi">
+          <div class="knptit">Nothing playing yet</div>
+          <div class="knpar">
+            <i class="ti ti-player-play-filled" style="font-size:11px;color:#E2289F;" aria-hidden="true"></i>
+            Add a song to get started
+          </div>
+          <div class="knpby" id="knpby"></div>
+        </div>
+        <div id="adminControls" style="display:none;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">
+          <div style="display:flex;gap:4px;">
+            <button id="btnPrev" style="width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:none;color:#E2289F;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Previous">
+              <i class="ti ti-player-skip-back" aria-hidden="true"></i>
+            </button>
+            <button id="btnPause" style="width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:none;color:#E2289F;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Pause">
+              <i class="ti ti-player-pause" aria-hidden="true"></i>
+            </button>
+            <button id="btnNext" style="width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:none;color:#E2289F;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Next">
+              <i class="ti ti-player-skip-forward" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="kwf" aria-hidden="true"></div>
+      <div class="kpr">
+        <div class="kprb" id="kprbClickable" style="cursor:default;">
+          <div class="kpf" id="kpf"></div>
+        </div>
+        <div class="kprr">
+          <span id="kpt">0:00</span>
+          <span id="kpdur">—:——</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="kts">
+      <button class="ktab on" id="tabQueue">Queue</button>
+      <button class="ktab" id="tabHistory">History</button>
+    </div>
+
+    <!-- Queue view -->
+    <div id="kqv"></div>
+
+    <!-- History view -->
+    <div id="khv" style="display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
+      <i class="ti ti-history" style="font-size:52px;color:#1a1a1a;" aria-hidden="true"></i>
+      <span style="color:#333;font-size:13px;">Songs played tonight will appear here.</span>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="kba">
+      <button class="kadb" id="btnAddSong" aria-label="Add song">
+        <i class="ti ti-plus" aria-hidden="true"></i> Add Song
+      </button>
+      <button class="kdjb" id="btnLeave" aria-label="Leave session" style="display:flex;color:#888;">
+        <i class="ti ti-door-exit" aria-hidden="true"></i>
+      </button>
+      <button class="kdjb" id="btnDJControls" aria-label="DJ controls">
+        <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i>
+      </button>
+    </div>
+
+  </div><!-- /#kapp -->
+
+  <!-- ── Add Song Modal ────────────────────────────────────────────────────── -->
+  <div id="kAddModal" class="kmodal" role="dialog" aria-label="Add song">
+    <div class="kmodal-inner" style="height:80%;">
+      <div class="kmodal-hdr">
+        <h2>Add a Song</h2>
+        <button class="kmbtn" id="btnCloseAdd" aria-label="Close">
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="ksearch-wrap">
+        <input id="kSearchInput" class="ksearch-inp" type="search"
+               placeholder="Search Spotify…" autocomplete="off">
+      </div>
+      <div id="kSearchResults"></div>
+    </div>
+  </div>
+
+  <!-- ── DJ Controls Modal ─────────────────────────────────────────────────── -->
+  <div id="kDJModal" class="kmodal" role="dialog" aria-label="DJ controls">
+    <div class="kmodal-inner">
+      <div class="kmodal-hdr">
+        <h2>Controls</h2>
+        <button class="kmbtn" id="btnCloseDJ" aria-label="Close">
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="kdj-body">
+        <div class="kdjrow" style="flex-direction:column;align-items:center;gap:8px;">
+          <div class="kdjrow-l" style="width:100%;">
+            <i class="ti ti-qrcode" aria-hidden="true"></i>
+            Invite others
+          </div>
+          <div style="font-size:28px;font-weight:900;letter-spacing:6px;color:#E2289F;" id="modalSessionCode"></div>
+          <canvas id="modalQR" style="border-radius:8px;"></canvas>
+        </div>
+        <div class="kdjrow">
+          <div class="kdjrow-l">
+            <i class="ti ti-door-exit" aria-hidden="true"></i>
+            Leave session
+          </div>
+          <button class="kdjact danger" id="btnLeaveSession">Leave</button>
+        </div>
+        <div class="kdjrow">
+          <div class="kdjrow-l">
+            <i class="ti ti-player-pause" aria-hidden="true"></i>
+            Pause / Resume queue
+          </div>
+          <button class="kdjact" id="btnDJPause">Pause</button>
+        </div>
+        <div class="kdjrow">
+          <div class="kdjrow-l">
+            <i class="ti ti-player-skip-forward" aria-hidden="true"></i>
+            Skip current song
+          </div>
+          <button class="kdjact" id="btnDJSkip">Skip</button>
+        </div>
+        <div class="kdjrow">
+          <div class="kdjrow-l">
+            <i class="ti ti-brand-spotify" aria-hidden="true"></i>
+            Connect Spotify (DJ playback)
+          </div>
+          <button class="kdjact" id="btnDJSpotify">Connect</button>
+        </div>
+        <div class="kdjrow">
+          <div class="kdjrow-l">
+            <i class="ti ti-trash" aria-hidden="true"></i>
+            Clear entire queue
+          </div>
+          <button class="kdjact danger" id="btnDJClear">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.kw -->
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script type="module" src="./app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+  }
+</script>
+</body>
+</html>
