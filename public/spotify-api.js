@@ -1,5 +1,5 @@
 const SPOTIFY_CLIENT_ID = 'c1b30a4a1bde4b1e9680e47fc93942ea';
-const REDIRECT_URI = 'http://127.0.0.1:5500/public/callback.html';
+const REDIRECT_URI = 'https://kue-production.up.railway.app/callback';
 const SCOPES = 'streaming user-read-playback-state user-modify-playback-state';
 
 // ── PKCE OAuth (DJ only) ──────────────────────────────────────────────────────
@@ -25,7 +25,7 @@ export async function handleCallback() {
   if (!code) return null;
 
   const verifier = sessionStorage.getItem('pkce_verifier');
-  const res = await fetch('http://192.168.4.67:3000/api/spotify/token', {
+  const res = await fetch('https://kue-production.up.railway.app/api/spotify/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code, verifier, redirect_uri: REDIRECT_URI })
@@ -52,7 +52,7 @@ export async function getAccessToken() {
   const refresh = localStorage.getItem('sp_refresh');
   if (!refresh) return null;
 
-  const res = await fetch('http://192.168.4.67:3000/api/spotify/refresh', {
+  const res = await fetch('https://kue-production.up.railway.app/api/spotify/refresh', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: refresh })
@@ -71,7 +71,7 @@ export async function searchTracks(query) {
   const cached = searchCache.get(key);
   if (cached && Date.now() - cached.ts < 300_000) return cached.results;
 
-  const res = await fetch(`http://192.168.4.67:3000/api/spotify/search?q=${encodeURIComponent(query)}`);
+  const res = await fetch(`https://kue-production.up.railway.app/api/spotify/search?q=${encodeURIComponent(query)}`);
   if (!res.ok) throw new Error('Search failed');
   const data = await res.json();
 

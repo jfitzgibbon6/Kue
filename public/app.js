@@ -102,7 +102,7 @@ async function createNewSession() {
   document.getElementById('ldCode').textContent = sessionId;
   document.getElementById('ldShareBox').style.display = 'flex';
 
-  const joinUrl = `http://192.168.4.67:5500/public/index.html?join=${sessionId}`;
+  const joinUrl = `https://kuem-15821.web.app?join=${sessionId}`;
   const canvas = document.getElementById('ldQR');
   QRCode.toCanvas(canvas, joinUrl, { width: 120, color: { dark: '#E2289F', light: '#111' } });
 
@@ -287,7 +287,7 @@ async function runSearch(q) {
 function openDJControls() {
   if (!userIsDJ) return;
   document.getElementById('modalSessionCode').textContent = sessionId;
-  const joinUrl = `http://192.168.4.67:5500/public/index.html?join=${sessionId}`;
+  const joinUrl = `https://kuem-15821.web.app?join=${sessionId}`;
   QRCode.toCanvas(document.getElementById('modalQR'), joinUrl, { width: 120, color: { dark: '#E2289F', light: '#111' } });
   document.getElementById('kDJModal').style.display = 'flex';
 }
