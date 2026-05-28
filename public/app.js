@@ -19,6 +19,14 @@ let paused = false;
 (async () => {
   if (location.search.includes('code=')) await handleCallback();
 
+  // Listen for Spotify token from popup
+  window.addEventListener('message', async (e) => {
+    if (e.data?.type === 'spotify_connected') {
+      showToast('Spotify connected!');
+      initPlayer(deviceId => setDJDevice(deviceId), () => {});
+    }
+  });
+
   // Auto-fill session code from QR scan
   const joinCode = new URLSearchParams(location.search).get('join');
   if (joinCode) document.getElementById('ldCode2').value = joinCode;

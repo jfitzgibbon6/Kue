@@ -17,7 +17,9 @@ export async function startSpotifyAuth() {
     code_challenge_method: 'S256',
     code_challenge: challenge
   });
-  location.href = `https://accounts.spotify.com/authorize?${params}`;
+  const url = `https://accounts.spotify.com/authorize?${params}`;
+  // Open in a new tab to avoid in-app browser restrictions
+  window.open(url, '_blank');
 }
 
 export async function handleCallback() {
