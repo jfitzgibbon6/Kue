@@ -10,7 +10,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI, PORT = 3000 } = process.env;
+const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI, PORT = process.env.PORT || 3000 } = process.env;
 
 // ── Client-credentials token cache (for search proxy) ────────────────────────
 
