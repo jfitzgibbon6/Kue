@@ -1,5 +1,5 @@
 const SPOTIFY_CLIENT_ID = 'c1b30a4a1bde4b1e9680e47fc93942ea';
-const REDIRECT_URI = 'https://kue-production.up.railway.app/callback';
+const REDIRECT_URI = 'https://kuem-15821.web.app/callback.html';
 const SCOPES = 'streaming user-read-playback-state user-modify-playback-state';
 
 // ── PKCE OAuth (DJ only) ──────────────────────────────────────────────────────
